@@ -1,29 +1,42 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ImageResizer
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            string sourcePath = Path.Combine(Environment.CurrentDirectory, "images");
-            string destinationPath = Path.Combine(Environment.CurrentDirectory, "output"); ;
+            var sourcePath = Path.Combine(Environment.CurrentDirectory, "images");
+            var destinationPath = Path.Combine(Environment.CurrentDirectory, "output"); ;
 
-            ImageProcess imageProcess = new ImageProcess();
+            var imageProcess = new ImageProcess();
 
             imageProcess.Clean(destinationPath);
 
-            Stopwatch sw = new Stopwatch();
+            var sw = new Stopwatch();
             sw.Start();
             imageProcess.ResizeImages(sourcePath, destinationPath, 2.0);
             sw.Stop();
 
-            Console.WriteLine($"花費時間: {sw.ElapsedMilliseconds} ms");
+            var beforeTime = sw.ElapsedMilliseconds;
+
+            Console.WriteLine($"修改前花費時間: {beforeTime} ms");
+
+            var imageProcessTask = new ImageProcessTask();
+
+            imageProcessTask.Clean(destinationPath);
+
+            sw.Restart();
+            imageProcessTask.ResizeImages(sourcePath, destinationPath, 2.0);
+            sw.Stop();
+
+            var afterTime = sw.ElapsedMilliseconds;
+
+            Console.WriteLine($"修改後花費時間: {afterTime} ms");
+
+            Console.WriteLine($"提升約: {100 - (double)afterTime / beforeTime * 100} %");
         }
     }
 }
